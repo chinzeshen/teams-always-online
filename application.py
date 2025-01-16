@@ -1,3 +1,8 @@
+# To compile into .exe, run the following command in the terminal:
+# pyinstaller --onefile application.py
+# Then create a shortcut and add it into the startup folder, by running the following command in the terminal:
+# shell:startup
+
 import tkinter as tk
 from threading import Thread, Event
 import pyautogui
@@ -17,13 +22,13 @@ class PreventIdleApp:
         tk.Label(root, text="Interval (seconds):").grid(row=0, column=0, padx=5, pady=5)
         self.interval_entry = tk.Entry(root)
         self.interval_entry.grid(row=0, column=1, padx=5, pady=5)
-        self.interval_entry.insert(0, "30")  # Default interval
+        self.interval_entry.insert(0, "300")  # Default interval
 
         # Time Window 1
         tk.Label(root, text="Time Window 1 Start (HH:MM):").grid(row=1, column=0, padx=5, pady=5)
         self.start_time1_entry = tk.Entry(root)
         self.start_time1_entry.grid(row=1, column=1, padx=5, pady=5)
-        self.start_time1_entry.insert(0, "09:00")  # Default start time
+        self.start_time1_entry.insert(0, "08:00")  # Default start time
 
         tk.Label(root, text="Time Window 1 End (HH:MM):").grid(row=2, column=0, padx=5, pady=5)
         self.end_time1_entry = tk.Entry(root)
@@ -39,7 +44,7 @@ class PreventIdleApp:
         tk.Label(root, text="Time Window 2 End (HH:MM):").grid(row=4, column=0, padx=5, pady=5)
         self.end_time2_entry = tk.Entry(root)
         self.end_time2_entry.grid(row=4, column=1, padx=5, pady=5)
-        self.end_time2_entry.insert(0, "17:00")  # Default end time
+        self.end_time2_entry.insert(0, "18:00")  # Default end time
 
         # Start Button
         self.start_button = tk.Button(root, text="Start", command=self.start)
@@ -57,8 +62,9 @@ class PreventIdleApp:
         """
         Track user activity (mouse or keyboard) and update the last activity timestamp.
         """
-        def on_any_event(event):
+        def on_any_event(*args):
             self.last_activity_time = datetime.now()
+            # print(f"Last activity: {self.last_activity_time}")
 
         # Start mouse and keyboard listeners
         self.mouse_listener = mouse.Listener(on_click=on_any_event, on_move=on_any_event, on_scroll=on_any_event)
@@ -75,6 +81,11 @@ class PreventIdleApp:
             while not self.stop_event.is_set():
                 now = datetime.now().time()
                 time_since_last_activity = datetime.now() - self.last_activity_time
+
+                # Start tracking user activity
+                self.track_user_activity()
+                # print(f"Time since last activity: {time_since_last_activity}")
+                # print(f"Last activity time: {self.last_activity_time}")
 
                 # Check if the current time is within any of the time windows
                 if any(start <= now <= end for start, end in time_windows):
